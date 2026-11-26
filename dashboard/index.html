@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Token Radar — pre-token protocols ranked by implied value</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header class="top">
+  <div>
+    <h1>TOKEN RADAR</h1>
+    <p class="sub">Protocols that record no token, ranked by what a token would be worth.
+      Snapshot <span id="asof">—</span> · TVL floor <span id="floor">—</span></p>
+  </div>
+  <div class="stats">
+    <div><b id="nBoard">—</b><span>pre-token ranked</span></div>
+    <div><b id="nLive">—</b><span>live tokens</span></div>
+    <div><b id="nWatch">—</b><span>watchlist covered</span></div>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button id="tabBoard" class="on" role="tab">Pre-token board</button>
+  <button id="tabLive" role="tab">Live tokens</button>
+</nav>
+
+<section class="controls">
+  <input id="q" type="search" placeholder="Search name or slug…" autocomplete="off">
+  <select id="fCat" aria-label="Category"><option value="">All categories</option></select>
+  <select id="fChain" aria-label="Chain"><option value="">All chains</option></select>
+  <select id="fSort" aria-label="Sort">
+    <option value="rank">Sort: rank</option>
+    <option value="implied">Sort: implied value ↓</option>
+    <option value="tvl">Sort: TVL ↓</option>
+    <option value="chg">Sort: 7d change ↓</option>
+    <option value="age">Sort: age ↓</option>
+  </select>
+  <span id="count" class="count"></span>
+</section>
+
+<main>
+  <table id="board">
+    <thead><tr>
+      <th data-k="rank">#</th><th>Protocol</th><th>Category</th><th>Chains</th>
+      <th data-k="tvl">TVL</th><th data-k="chg">7d</th><th data-k="age">Age</th>
+      <th data-k="implied">Implied value</th><th></th>
+    </tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+  <p id="empty" class="empty" hidden>No protocol matches this filter.</p>
+</main>
+
+<aside id="drawer" hidden>
+  <button id="close" aria-label="Close">×</button>
+  <div id="detail"></div>
+</aside>
+
+<section class="method">
+  <h2>Method — model radar-2</h2>
+  <p><b>Implied value = TVL × category multiple × growth × maturity × chains.</b>
+  The category multiple is the median mcap/TVL among live-token protocols in the
+  same category, used only when at least 3 live protocols back it and the median
+  is positive; thinner, degenerate or empty categories fall back to the global
+  median. Growth is the 7-day TVL change clamped to −60%…+120%, weighted 0.5:
+  growth = 1 + clamp/100 × 0.5 (no reported change counts as 0). Maturity is
+  0.6 + min(age, 1095)/1095 × 0.4 (unknown age counts as 365 days). Chains
+  multiply by 1 + 0.02 × min(chains, 5). The result is rounded to whole dollars,
+  at least $1. Only the snapshot's own figures are used; no list of names is
+  hardcoded. A protocol "records no token" when its DefiLlama record carries no
+  market cap, CoinGecko id or symbol — that is the record's word, not proof it
+  has none.</p>
+  <p id="mults" class="mults"></p>
+</section>
+
+<footer>Token Radar · model radar-2 · data: DefiLlama snapshot, see board.json for the full board.</footer>
+<script src="../data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
